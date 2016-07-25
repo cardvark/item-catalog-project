@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'> -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row top-menu">
+                <div class="col-md-6">
+                    <a href="{{url_for('main_page')}}">
+                        <span class="glyphicon glyphicon-home" aria-hidden="true"></span>Categories
+                    </a>
+                </div>
+                <div class="col-md-6 text-right">
+                    {% if 'username' not in session %}
+                        <a href="#">Log in</a>
+                    {% else %}
+                        <a href="#">Log out</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>

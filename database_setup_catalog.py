@@ -54,6 +54,7 @@ def create_category(name):
     session.commit()
     return new_category.id
 
+
 def get_cat(cat_id):
     cat = session.query(Category).filter_by(id=cat_id).one()
     return cat

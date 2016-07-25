@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+Main page!
+<br>
+
+{% for cat in categories %}
+{{cat.name}}
+<br>
+{% endfor %}
+{% endblock %}

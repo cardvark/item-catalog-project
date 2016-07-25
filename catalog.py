@@ -4,7 +4,7 @@ import random
 import string
 app = Flask(__name__)
 
-from sqlalchemy import asc
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import sessionmaker
 
 from database_setup_catalog import Base, User, Category, ItemTitle, engine
@@ -22,17 +22,23 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+# TODO: html templates.  Base page, individual pages.
+# TODO: pages functionality
+# TODO: pages layout and styles.
 # Main page. Show game genres and most recently added Titles.
 @app.route('/')
 @app.route('/category')
 def main_page():
     categories = session.query(Category).all()
+    items = session.query(ItemTitle).order_by(desc(ItemTitle.id)).limit(10)
 
-    output = '<br>'
-    for cat in categories:
-        output += cat.name
-        output += '<br>'
-    return 'Main page.' + output
+    return render_template('main.html', categories=categories)
+
+    # output = '<br>'
+    # for cat in categories:
+    #     output += cat.name
+    #     output += '<br>'
+    # return 'Main page.' + output
 
 
 # Specific category page.  Shows all titles.

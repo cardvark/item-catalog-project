@@ -1,21 +1,18 @@
 {% extends "base.html" %}
+{{ super() }}
 {% block content %}
-Main page!
-<br>
-<br>
+    Main page!
+    <br>
+    <br>
 
-{% for cat in categories %}
-{{cat.name}}
-<br>
-{% endfor %}
-<br>
-<br>
+    {% for cat in categories %}
+    <a href="{{url_for('show_category',category_id=cat.id)}}">{{cat.name}}</a>
+    <br>
+    {% endfor %}
+    <br>
+    <br>
 
-Recent entries:
-<br>
-{% for item in items %}
-{{item.name}}, {{item.category.name}}
-<br>
-{% endfor %}
+    {% block body %}
+    {% endblock %}
 
 {% endblock %}

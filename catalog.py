@@ -32,7 +32,7 @@ def main_page():
     categories = session.query(Category).all()
     items = session.query(ItemTitle).order_by(desc(ItemTitle.id)).limit(10)
 
-    return render_template('main.html', categories=categories, items=items)
+    return render_template('latest_items.html', categories=categories, items=items)
 
 
 # Specific category page.  Shows all titles.

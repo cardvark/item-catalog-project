@@ -1,0 +1,9 @@
+{% extends 'main.html' %}
+{% block body %}
+    Recent entries:
+    <br>
+    {% for item in items %}
+    <a href="{{url_for('show_item', category_id=item.category.id, item_id=item.id)}}">{{item.name}}</a>, {{item.category.name}}
+    <br>
+    {% endfor %}
+{% endblock %}

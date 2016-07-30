@@ -32,14 +32,25 @@ def main_page():
     categories = session.query(Category).all()
     items = session.query(ItemTitle).order_by(desc(ItemTitle.id)).limit(10)
 
-    return render_template('latest_items.html', categories=categories, items=items)
+    return render_template(
+        'latest_items.html',
+        categories=categories,
+        items=items
+        )
 
 
 # Specific category page.  Shows all titles.
 @app.route('/category/<int:category_id>/')
 def show_category(category_id):
+    categories = session.query(Category).all()
     cat = db.get_cat(category_id)
-    return 'Individual category page.  {category}'.format(category=cat.name)
+    items = session.query(ItemTitle).filter_by(category_id=cat.id).order_by(asc(ItemTitle.name))
+    return render_template(
+        'category.html',
+        categories=categories,
+        category=cat,
+        items=items
+        )
 
 
 # Item page. Shows desc.
@@ -47,9 +58,10 @@ def show_category(category_id):
 def show_item(category_id, item_id):
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
-    return 'Specific item page.  Category: {category}, Item: {item}'.format(
-        category=cat.name,
-        item=item.name
+    return render_template(
+        'item.html',
+        category=cat,
+        item=item
         )
 
 

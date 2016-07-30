@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{{ super() }}
+{% block content %}
+
+{{item.name}}
+<br>
+<br>
+<br>
+Category: {{category.name}}
+<br>
+<br>
+Description: {{item.description}}
+
+{% endblock %}

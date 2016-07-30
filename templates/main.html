@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {{ super() }}
 {% block content %}
-    Categories:
-    <br>
-    <br>
-
+    <h2>Categories:</h2>
     {% for cat in categories %}
     <a href="{{url_for('show_category',category_id=cat.id)}}">{{cat.name}}</a>
     <br>
     {% endfor %}
+    <br>
+
+    <h2>New item</h2>
+    <a href="{{url_for('add_item')}}">Add</a>
     <br>
     <br>
 

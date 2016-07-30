@@ -67,12 +67,11 @@ def show_item(category_id, item_id):
 
 # Add item page.
 @app.route(
-    '/category/<int:category_id>/new/',
+    '/category/new/',
     methods=['GET', 'POST']
     )
-def add_item(category_id):
-    cat = db.get_cat(category_id)
-    return 'Add new item to {category}'.format(category=cat.name)
+def add_item():
+    return render_template('new_item.html')
 
 
 # Edit item page.

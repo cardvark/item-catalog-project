@@ -29,7 +29,7 @@ session = DBSession()
 @app.route('/')
 @app.route('/category')
 def main_page():
-    categories = session.query(Category).all()
+    categories = session.query(Category).order_by(asc(Category.name))
     items = session.query(ItemTitle).order_by(desc(ItemTitle.id)).limit(10)
 
     return render_template(
@@ -42,7 +42,7 @@ def main_page():
 # Specific category page.  Shows all titles.
 @app.route('/category/<int:category_id>/')
 def show_category(category_id):
-    categories = session.query(Category).all()
+    categories = session.query(Category).order_by(asc(Category.name))
     cat = db.get_cat(category_id)
     items = session.query(ItemTitle).filter_by(category_id=cat.id).order_by(asc(ItemTitle.name))
     return render_template(
@@ -70,8 +70,9 @@ def show_item(category_id, item_id):
     '/category/new/',
     methods=['GET', 'POST']
     )
-def add_item():
-    return render_template('new_item.html')
+def new_item():
+    categories = session.query(Category).order_by(asc(Category.name))
+    return render_template('new_item.html', categories=categories)
 
 
 # Edit item page.
@@ -80,6 +81,7 @@ def add_item():
     methods=['GET', 'POST']
     )
 def edit_item(category_id, item_id):
+    categories = session.query(Category).order_by(asc(Category.name))
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
     return 'Edit item page.  Category: {category}, Item: {item}'.format(

@@ -2,4 +2,21 @@
 {% block content %}
     <h2>New Item</h2>
 
+    <form action="{{url_for('new_item')}}" method="post">
+        <p>Name:</p>
+        <input type="text" size="30" name="name">
+        <br>
+        <p>Description:</p>
+        <input type="text" size="50" name="description">
+        <br>
+        <p>Category:</p>
+        <select>
+            {% for cat in categories %}
+            <option value="{{cat.name}}">{{cat.name}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <input type="submit" value="Create">
+    </form>
+
 {% endblock %}

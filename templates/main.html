@@ -2,9 +2,20 @@
 {% block content %}
 Main page!
 <br>
+<br>
 
 {% for cat in categories %}
 {{cat.name}}
 <br>
 {% endfor %}
+<br>
+<br>
+
+Recent entries:
+<br>
+{% for item in items %}
+{{item.name}}, {{item.category.name}}
+<br>
+{% endfor %}
+
 {% endblock %}

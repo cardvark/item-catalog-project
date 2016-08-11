@@ -11,6 +11,8 @@ from sqlalchemy.orm import sessionmaker
 from database_setup_catalog import Base, User, Category, ItemTitle, engine
 import database_setup_catalog as db
 
+import time
+
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
@@ -89,17 +91,13 @@ def show_item(category_id, item_id):
 def new_item(category_id):
     categories = session.query(Category).order_by(asc(Category.name))
 
-    field_vals = {}
-
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
         category = request.form['category']
-        print category
+        field_vals = {}
 
         user_id = 1  # TODO: replace after implementing user login.
-
-        # valid_input = True
 
         if name and description and category != "None":
             print 'received inputs'
@@ -114,7 +112,7 @@ def new_item(category_id):
             return redirect(url_for(
                 'show_item',
                 category_id=cat_id,
-                item_id=new_item
+                item_id=new_item.id
                 )
             )
         elif category == "None":
@@ -144,20 +142,42 @@ def edit_item(category_id, item_id):
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
 
-    return render_template(
-        'edit_item.html',
-        category_id=category_id,
-        item_id=item_id,
-        categories=categories,
-        input_name=item.name,
-        input_description=item.description,
-        default_cat=cat.name
-        )
-    # return 'Edit item page.  Category: {category}, Item: {item}'.format(
-    #     category=cat.name,
-    #     item=item.name
-    #     )
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        category = request.form['category']
+        # user_id = 1  # TODO: replace after implementing user login.
 
+        field_vals = {}
+
+        if name and description:
+            flash('Item edited!')
+            db.edit_item(item, name, description, db.get_cat_id(category))
+
+            time.sleep(1)
+            return redirect(url_for(
+                'show_item',
+                category_id=category_id,
+                item_id=item_id
+                )
+            )
+        else:
+            field_vals['default_cat'] = category
+            flash('Invalid input! Must enter values.')
+
+        field_vals['input_name'] = name
+        field_vals['input_description'] = description
+        return render_template('new_item.html', categories=categories, **field_vals)
+    else:
+        return render_template(
+            'edit_item.html',
+            category_id=category_id,
+            item_id=item_id,
+            categories=categories,
+            input_name=item.name,
+            input_description=item.description,
+            default_cat=cat.name
+            )
 
 # JSON APIs.
 

@@ -94,11 +94,20 @@ def create_item(name, description, category_id, user_id):
         )
     session.add(new_item)
     session.commit()
-    return new_item.id
+    return new_item
 
 
 def get_item(item_id):
     item = session.query(ItemTitle).filter_by(id=item_id).one()
+    return item
+
+
+def edit_item(item, name, description, category_id):
+    item.name = name
+    item.description = description
+    item.category_id = category_id
+    session.add(item)
+    session.commit()
     return item
 
 

@@ -11,4 +11,10 @@ Category: {{category.name}}
 <br>
 Description: {{item.description}}
 
+<br>
+<br>
+<a href="{{url_for('edit_item', category_id=category.id, item_id=item.id)}}">Edit</a>
+/
+<a href="#">Delete</a>
+
 {% endblock %}

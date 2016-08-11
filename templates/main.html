@@ -9,7 +9,11 @@
     <br>
 
     <h2>New item</h2>
-    <a href="{{url_for('new_item')}}">Add</a>
+    {% if category %}
+        <a href="{{url_for('new_item', category_id=category.id)}}">Add</a>
+    {% else %}
+        <a href="{{url_for('new_item')}}">Add</a>
+    {% endif %}
     <br>
     <br>
 

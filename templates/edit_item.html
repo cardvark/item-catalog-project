@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Edit Item</h2>
+
+    <form action="{{url_for('edit_item', category_id=category_id, item_id=item_id)}}" method="POST">
+        <p>Name:</p>
+        <input type="text" size="30" name="name" value="{{input_name}}">
+        <br>
+        <p>Description:</p>
+        <input type="text" size="50" name="description" value="{{input_description}}">
+        <br>
+        <p>Category:</p>
+        <select name="category">
+            {% if not default_cat %}
+                <option selected="selected" {# disabled="disabled"  #}value="None">Select a category</option>
+            {% endif %}
+            {% for cat in categories %}
+                {% if cat.name == default_cat %}
+                    <option selected="selected" value="{{cat.name}}">{{cat.name}}</option>
+                {% else %}
+                    <option value="{{cat.name}}">{{cat.name}}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <br>
+        <br>
+        <input type="submit" value="Edit">
+    </form>
+
+{% endblock %}

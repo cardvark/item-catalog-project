@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, jsonify, url_for, f
 from flask import session as login_session
 import random
 import string
+import re
 app = Flask(__name__)
 
 from sqlalchemy import asc, desc
@@ -22,8 +23,18 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-# TODO: html templates.  Base page, individual pages.
-# TODO: pages functionality
+name_re = re.compile(r"^[a-zA-Z0-9_-]{1,50}$")
+user_re = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+password_re = re.compile(r"^.{3,20}$")
+email_re = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+
+
+def reg_check(text, reg):
+    return reg.match(text)
+
+
+# TODO: new item post
+# TODO: edit item get and post
 # TODO: pages layout and styles.
 # Main page. Show game genres and most recently added Titles.
 @app.route('/')
@@ -68,11 +79,59 @@ def show_item(category_id, item_id):
 # Add item page.
 @app.route(
     '/category/new/',
+    defaults={'category_id': None},
     methods=['GET', 'POST']
     )
-def new_item():
+@app.route(
+    '/category/new/<int:category_id>/',
+    methods=['GET', 'POST']
+    )
+def new_item(category_id):
     categories = session.query(Category).order_by(asc(Category.name))
-    return render_template('new_item.html', categories=categories)
+
+    field_vals = {}
+
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        category = request.form['category']
+        print category
+
+        user_id = 1  # TODO: replace after implementing user login.
+
+        # valid_input = True
+
+        if name and description and category != "None":
+            print 'received inputs'
+            flash('New item added!')
+            cat_id = db.get_cat_id(category)
+            new_item = db.create_item(
+                name,
+                description,
+                cat_id,
+                user_id
+                )
+            return redirect(url_for(
+                'show_item',
+                category_id=cat_id,
+                item_id=new_item
+                )
+            )
+        elif category == "None":
+            flash('Must enter a category.')
+        else:
+            field_vals['default_cat'] = category
+            flash('Invalid input! Must enter values.')
+
+        field_vals['input_name'] = name
+        field_vals['input_description'] = description
+        return render_template('new_item.html', categories=categories, **field_vals)
+    else:
+        if category_id:
+            cat_name = db.get_cat(category_id).name
+            return render_template('new_item.html', categories=categories, default_cat=cat_name)
+        else:
+            return render_template('new_item.html', categories=categories)
 
 
 # Edit item page.
@@ -84,10 +143,20 @@ def edit_item(category_id, item_id):
     categories = session.query(Category).order_by(asc(Category.name))
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
-    return 'Edit item page.  Category: {category}, Item: {item}'.format(
-        category=cat.name,
-        item=item.name
+
+    return render_template(
+        'edit_item.html',
+        category_id=category_id,
+        item_id=item_id,
+        categories=categories,
+        input_name=item.name,
+        input_description=item.description,
+        default_cat=cat.name
         )
+    # return 'Edit item page.  Category: {category}, Item: {item}'.format(
+    #     category=cat.name,
+    #     item=item.name
+    #     )
 
 
 # JSON APIs.

@@ -102,6 +102,11 @@ def get_item(item_id):
     return item
 
 
+def delete_item(item):
+    session.delete(item)
+    session.commit()
+
+
 def edit_item(item, name, description, category_id):
     item.name = name
     item.description = description

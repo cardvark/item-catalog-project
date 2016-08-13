@@ -189,11 +189,19 @@ def delete_item(category_id, item_id):
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
 
-    return render_template(
-        'delete_item.html',
-        category=cat,
-        item=item
-        )
+    if request.method == 'POST':
+        delete_confirmation = request.form['delete']
+
+        if delete_confirmation == 'yes':
+            db.delete_item(item)
+            flash('Item entry deleted.')
+        return redirect(url_for('show_category', category_id=cat.id))
+    else:
+        return render_template(
+            'delete_item.html',
+            category=cat,
+            item=item
+            )
 
 # JSON APIs.
 

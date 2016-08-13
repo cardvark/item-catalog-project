@@ -186,7 +186,14 @@ def edit_item(category_id, item_id):
     methods=['GET', 'POST']
     )
 def delete_item(category_id, item_id):
-    return 'Delete item page.'
+    cat = db.get_cat(category_id)
+    item = db.get_item(item_id)
+
+    return render_template(
+        'delete_item.html',
+        category=cat,
+        item=item
+        )
 
 # JSON APIs.
 

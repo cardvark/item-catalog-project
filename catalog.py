@@ -35,8 +35,9 @@ def reg_check(text, reg):
     return reg.match(text)
 
 
-# TODO: new item post
-# TODO: edit item get and post
+# TODO: delete item page and functionality.
+# TODO: json end points
+# TODO: oauth login, logout, session state.
 # TODO: pages layout and styles.
 # Main page. Show game genres and most recently added Titles.
 @app.route('/')
@@ -178,6 +179,14 @@ def edit_item(category_id, item_id):
             input_description=item.description,
             default_cat=cat.name
             )
+
+
+@app.route(
+    '/category/<int:category_id>/<int:item_id>/delete/',
+    methods=['GET', 'POST']
+    )
+def delete_item(category_id, item_id):
+    return 'Delete item page.'
 
 # JSON APIs.
 

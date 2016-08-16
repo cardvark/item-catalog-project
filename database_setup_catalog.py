@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy import asc, desc
 
 
 Base = declarative_base()
@@ -65,9 +66,14 @@ def get_cat_id(name):
     return cat.id
 
 
-def get_items_in_category(category_name):
-    items_list = session.query(ItemTitle).join(ItemTitle.category).filter_by(name=category_name)
+def get_items_in_category(category_id):
+    items_list = session.query(ItemTitle).join(ItemTitle.category).filter_by(id=category_id)
     return items_list
+
+
+def get_all_categories():
+    categories = session.query(Category).order_by(asc(Category.name))
+    return categories
 
 
 class Category(Base):

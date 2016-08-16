@@ -35,7 +35,6 @@ def reg_check(text, reg):
     return reg.match(text)
 
 
-# TODO: delete item page and functionality.
 # TODO: json end points
 # TODO: oauth login, logout, session state.
 # TODO: pages layout and styles.
@@ -43,7 +42,7 @@ def reg_check(text, reg):
 @app.route('/')
 @app.route('/category')
 def main_page():
-    categories = session.query(Category).order_by(asc(Category.name))
+    categories = db.get_all_categories()
     items = session.query(ItemTitle).order_by(desc(ItemTitle.id)).limit(10)
 
     return render_template(
@@ -56,7 +55,7 @@ def main_page():
 # Specific category page.  Shows all titles.
 @app.route('/category/<int:category_id>/')
 def show_category(category_id):
-    categories = session.query(Category).order_by(asc(Category.name))
+    categories = db.get_all_categories()
     cat = db.get_cat(category_id)
     items = session.query(ItemTitle).filter_by(category_id=cat.id).order_by(asc(ItemTitle.name))
     return render_template(
@@ -90,7 +89,7 @@ def show_item(category_id, item_id):
     methods=['GET', 'POST']
     )
 def new_item(category_id):
-    categories = session.query(Category).order_by(asc(Category.name))
+    categories = db.get_all_categories()
 
     if request.method == 'POST':
         name = request.form['name']
@@ -139,7 +138,7 @@ def new_item(category_id):
     methods=['GET', 'POST']
     )
 def edit_item(category_id, item_id):
-    categories = session.query(Category).order_by(asc(Category.name))
+    categories = db.get_all_categories()
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
 
@@ -203,7 +202,26 @@ def delete_item(category_id, item_id):
             item=item
             )
 
+
 # JSON APIs.
+@app.route('/category/JSON')
+def categories_json():
+    categories = session.query(Category).all()
+    return jsonify(Categories=[cat.serialize for cat in categories])
+
+
+@app.route('/category/<int:category_id>/JSON')
+def category_items_json(category_id):
+    item_list = db.get_items_in_category(category_id)
+    category = db.get_cat(category_id)
+    return jsonify(Category=category.name, Items=[item.serialize for item in item_list])
+    # return jsonify(Items=[item.serialize for item in item_list])
+
+
+@app.route('/category/<int:category_id>/<int:item_id>/JSON')
+def item_json(category_id, item_id):
+    item = db.get_item(item_id)
+    return jsonify(Item=item.serialize)
 
 
 if __name__ == '__main__':

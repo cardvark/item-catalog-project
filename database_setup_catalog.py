@@ -15,12 +15,13 @@ session = DBSession()
 
 
 # User functions
-def create_user(name, email, picture):
+def create_user(login_session):
     new_user = User(
-        name=name,
-        email=email,
-        picture=picture
+        name=login_session['username'],
+        email=login_session['email'],
+        picture=login_session['picture']
         )
+
     session.add(new_user)
     session.commit()
     return new_user.id

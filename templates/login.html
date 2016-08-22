@@ -58,7 +58,7 @@
         <script>
             window.fbAsyncInit = function() {
                 FB.init({
-                    appId: '700933603391595',
+                    appId: '1195480740473485',
                     cookie: true,
                     xfbml: true,  // parse social plugins on this page
                     version: 'v2.4'
@@ -94,7 +94,7 @@
                             if (result) {
                                 $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...');
                                 setTimeout(function(){
-                                    window.location.href = "/restaurant";
+                                    window.location.href = "{{url_for('main_page')}}";
                                 }, 4000);
                             } else {
                                 $('#result').html('Failed to make a server-side call. Check your configuration and console.');
@@ -108,7 +108,7 @@
             {# Using FB sdk to create the login button #}
             {# scope is limited to public_profile and email info. #}
             <fb:login-button scope="public_profile, email" onlogin="sendTokenToServer();">
-                <a href="javascript:sendTokenToServer()">Login with Facebok</a>
+                <a href="javascript:sendTokenToServer()">Login with Facebook</a>
             </fb:login-button>
         </button>
         {# End FB sign in #}

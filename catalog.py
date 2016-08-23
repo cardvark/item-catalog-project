@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, jsonify, url_for, f
 from flask import session as login_session
 import random
 import string
-import re
 app = Flask(__name__)
 
 from sqlalchemy import asc, desc
@@ -24,26 +23,8 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# client id:
-# 870763511066-vro9k71bo250ertvcumeokil0gfv8a0m.apps.googleusercontent.com
-
-# client secret:
-# hBO3aKQCdR3DWrRN-auVY388
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = 'Item Catalog'
-
-name_re = re.compile(r"^[a-zA-Z0-9_-]{1,50}$")
-user_re = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-password_re = re.compile(r"^.{3,20}$")
-email_re = re.compile(r"^[\S]+@[\S]+.[\S]+$")
-
-
-def reg_check(text, reg):
-    return reg.match(text)
-
-
-# TODO: oauth login, logout, session state.
-# TODO: pages layout and styles.
 
 
 # Main page. Show game genres and most recently added Titles.
@@ -77,10 +58,12 @@ def show_category(category_id):
 # Item page. Shows desc.
 @app.route('/category/<int:category_id>/<int:item_id>/')
 def show_item(category_id, item_id):
+    categories = db.get_all_categories()
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
     return render_template(
         'item.html',
+        categories=categories,
         category=cat,
         item=item
         )
@@ -244,6 +227,7 @@ def fbconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+    # Exchange client token for long-lived server side token.
     access_token = request.data
     print 'Access token received {token}'.format(token=access_token)
 
@@ -257,7 +241,7 @@ def fbconnect():
         token=access_token
         )
     h = httplib2.Http()
-    result = h.request(token_url, 'GET')[1]
+    result = h.request(token_url, 'GET')[1]  # Getting long lived token
 
     base_url = 'https://graph.facebook.com/v2.4/me'
 
@@ -283,8 +267,9 @@ def fbconnect():
 
     login_session['picture'] = pic_data['data']['url']
 
+    # Check if user exists.
+    # Gplus login and FB login can generate same user_id, if share same email.
     user_id = db.get_user_id(login_session['email'])
-
     if not user_id:
         user_id = db.create_user(login_session)
 
@@ -306,7 +291,6 @@ def fbconnect():
 @app.route('/fbdisconnect', methods=['POST'])
 def fbdisconnect():
     facebook_id = login_session['facebook_id']
-
     access_token = login_session['access_token']
     url = 'https://graph.facebook.com/{id}/permissions?access_token={token}'.format(
         id=facebook_id,
@@ -330,9 +314,10 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    code = request.data
+    code = request.data  # one-time code from server
 
     try:
+        # Upgrades auth code into credentials object
         oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
@@ -343,6 +328,7 @@ def gconnect():
 
     access_token = credentials.access_token
 
+    # Checking validity of access_token
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={token}'.format(token=access_token))
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
@@ -353,11 +339,13 @@ def gconnect():
 
     gplus_id = credentials.id_token['sub']
 
+    # Verifies access_token is for intended user
     if result['user_id'] != gplus_id:
         response = make_response(json.dumps('Token\'s user ID doesn\'t match given user ID.'), 401)
         response.heads['Content-Type'] = 'application/json'
         return response
 
+    # Verifies access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = make_response(json.dumps('Token\'s client ID does not match app\'s.'), 401)
         print 'Token\'s client ID does not match app\'s.'
@@ -429,7 +417,7 @@ def gdisconnect():
         return response
 
 
-# Universal
+# Universal disconnect
 @app.route('/disconnect')
 def disconnect():
     if 'provider' in login_session:

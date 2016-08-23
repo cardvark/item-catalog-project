@@ -1,7 +1,27 @@
 {% extends "base.html" %}
 {{ super() }}
 {% block content %}
-    <h2>Categories:</h2>
+    <div class="row main-content">
+        <div class="col-sm-3 categories-sidebar">
+            <h2>Categories:</h2>
+            {% for cat in categories %}
+            <a href="{{url_for('show_category',category_id=cat.id)}}">{{cat.name}}</a>
+            <br>
+            {% endfor %}
+            <h3>New item</h3>
+            {% if category %}
+                <a href="{{url_for('new_item', category_id=category.id)}}">Add</a>
+            {% else %}
+                <a href="{{url_for('new_item')}}">Add</a>
+            {% endif %}
+        </div>
+        <div class="col-sm-9 content-space">
+            {% block body %}
+            {% endblock %}
+
+        </div>
+    </div>
+{#     <h2>Categories:</h2>
     {% for cat in categories %}
     <a href="{{url_for('show_category',category_id=cat.id)}}">{{cat.name}}</a>
     <br>
@@ -18,6 +38,6 @@
     <br>
 
     {% block body %}
-    {% endblock %}
+    {% endblock %} #}
 
 {% endblock %}

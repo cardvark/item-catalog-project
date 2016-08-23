@@ -1,0 +1,34 @@
+/** {
+    border: 1px solid red;
+}
+*/
+body {
+    position: relative;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 10px;
+    color: #333;
+}
+
+a {
+    color: black;
+}
+
+a:hover {
+    text-decoration: none;
+    color: gray;
+}
+
+.main-content {
+    border-top: 3px solid #666;
+}
+
+.categories-sidebar {
+    border-right: 3px solid #666;
+}
+
+.content-space {
+    padding-left: 80px;
+}

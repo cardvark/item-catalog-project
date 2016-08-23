@@ -2,7 +2,7 @@
 {% block body %}
     <h2>Recent entries:</h2>
     {% for item in items %}
-    <a href="{{url_for('show_item', category_id=item.category.id, item_id=item.id)}}">{{item.name}}</a>, {{item.category.name}}
+    <a href="{{url_for('show_item', category_id=item.category.id, item_id=item.id)}}">{{item.name}}, {{item.category.name}}</a>
     <br>
     {% endfor %}
 {% endblock %}

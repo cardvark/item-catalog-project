@@ -8,11 +8,11 @@
             <a href="{{url_for('show_category',category_id=cat.id)}}">{{cat.name}}</a>
             <br>
             {% endfor %}
-            <h3>New item</h3>
+            <h3>New Game</h3>
             {% if category %}
-                <a href="{{url_for('new_item', category_id=category.id)}}">Add</a>
+                <a href="{{url_for('new_item', category_id=category.id)}}">Add Title</a>
             {% else %}
-                <a href="{{url_for('new_item')}}">Add</a>
+                <a href="{{url_for('new_item')}}">Add Title</a>
             {% endif %}
         </div>
         <div class="col-sm-9 content-space">

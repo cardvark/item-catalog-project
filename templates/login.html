@@ -20,37 +20,37 @@
         <div id="result"></div>
         <script>
             function signInCallback(authResult) {
-            // If includes 'code' parameter, indicates successful.
-            // Authorization w/ google API was successful, one time use code is present.
-            if (authResult['code']) {
-                // hides button
-                $('#signinButton').attr('style', 'display: none');
-                // Send the one-tiem-use code to the server.
-                // If the server responds, write a 'login successful' message
-                // to the web page, and then redirect back to the main
-                // restaurants page.
-                $.ajax({
-                    type: 'POST',
-                    url:'/gconnect?state={{STATE}}', // Pass state token as argument, verify against forgery attack.
-                    processData: false, // don't want jQuery to process results into string.
-                    contentType: 'application/octet-stream; charset=utf-8', // sending arbitrary binary string of data.
-                    data: authResult['code'], // sending the one-time-user code.
-                    success: function(result) {
-                        if (result) {
-                            // pass info upon success, 4 second wait.
-                            $('#result').html('Login Successful! <br>' + result + '<br>Redirecting...')
-                            setTimeout(function(){
-                                window.location.href="{{url_for('main_page')}}";
-                            }, 4000);
-                        } else if (authResult['error']) {
-                            console.log('There was an error: ' + authResult['error']);
-                        } else {
-                            $('#result').html('Failed to make a server call.  Check your configuration and console.');
+                // If includes 'code' parameter, indicates successful.
+                // Authorization w/ google API was successful, one time use code is present.
+                if (authResult['code']) {
+                    // hides button
+                    $('#signinButton').attr('style', 'display: none');
+                    // Send the one-tiem-use code to the server.
+                    // If the server responds, write a 'login successful' message
+                    // to the web page, and then redirect back to the main
+                    // restaurants page.
+                    $.ajax({
+                        type: 'POST',
+                        url:'/gconnect?state={{STATE}}', // Pass state token as argument, verify against forgery attack.
+                        processData: false, // don't want jQuery to process results into string.
+                        contentType: 'application/octet-stream; charset=utf-8', // sending arbitrary binary string of data.
+                        data: authResult['code'], // sending the one-time-user code.
+                        success: function(result) {
+                            if (result) {
+                                // pass info upon success, 4 second wait.
+                                $('#result').html('Login Successful! <br>' + result + '<br>Redirecting...')
+                                setTimeout(function(){
+                                    window.location.href="{{url_for('main_page')}}";
+                                }, 4000);
+                            } else if (authResult['error']) {
+                                console.log('There was an error: ' + authResult['error']);
+                            } else {
+                                $('#result').html('Failed to make a server call.  Check your configuration and console.');
+                            }
                         }
-                    }
-                })
+                    })
+                }
             }
-        }
         </script>
         {# End google sign in #}
 

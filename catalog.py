@@ -27,10 +27,10 @@ CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_i
 APPLICATION_NAME = 'Item Catalog'
 
 
-# Main page. Show game genres and most recently added Titles.
 @app.route('/')
 @app.route('/category')
 def main_page():
+    """Main page. Show game genres and most recently added Titles."""
     categories = db.get_all_categories()
     items = session.query(ItemTitle).order_by(desc(ItemTitle.id)).limit(10)
 
@@ -41,9 +41,9 @@ def main_page():
         )
 
 
-# Specific category page.  Shows all titles.
 @app.route('/category/<int:category_id>/')
 def show_category(category_id):
+    """Specific category page.  Shows all titles."""
     categories = db.get_all_categories()
     cat = db.get_cat(category_id)
     items = session.query(ItemTitle).filter_by(category_id=cat.id).order_by(asc(ItemTitle.name))
@@ -55,9 +55,9 @@ def show_category(category_id):
         )
 
 
-# Item page. Shows desc.
 @app.route('/category/<int:category_id>/<int:item_id>/')
 def show_item(category_id, item_id):
+    """Specific item page. Shows desc."""
     categories = db.get_all_categories()
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
@@ -69,7 +69,6 @@ def show_item(category_id, item_id):
         )
 
 
-# Add item page.
 @app.route(
     '/category/new/',
     defaults={'category_id': None},
@@ -80,6 +79,7 @@ def show_item(category_id, item_id):
     methods=['GET', 'POST']
     )
 def new_item(category_id):
+    """Add new item page.  Requires logged in status."""
     if 'username' not in login_session:
         return redirect(url_for('show_login'))
 
@@ -126,12 +126,12 @@ def new_item(category_id):
             return render_template('new_item.html', categories=categories)
 
 
-# Edit item page.
 @app.route(
     '/category/<int:category_id>/<int:item_id>/edit/',
     methods=['GET', 'POST']
     )
 def edit_item(category_id, item_id):
+    """Edit item page. User must have created the item to edit."""
     if 'username' not in login_session:
         return redirect(url_for('show_login'))
 
@@ -147,7 +147,6 @@ def edit_item(category_id, item_id):
         name = request.form['name']
         description = request.form['description']
         category = request.form['category']
-        # user_id = 1  # TODO: replace after implementing user login.
 
         field_vals = {}
 
@@ -186,6 +185,7 @@ def edit_item(category_id, item_id):
     methods=['GET', 'POST']
     )
 def delete_item(category_id, item_id):
+    """Delete item page.  User must have created item to delete."""
     if 'username' not in login_session:
         return redirect(url_for('show_login'))
 
@@ -212,9 +212,9 @@ def delete_item(category_id, item_id):
             )
 
 
-# login handling
 @app.route('/login')
 def show_login():
+    """Login page"""
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
@@ -222,6 +222,7 @@ def show_login():
 
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
+    """FB connect functionality."""
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -290,6 +291,7 @@ def fbconnect():
 
 @app.route('/fbdisconnect', methods=['POST'])
 def fbdisconnect():
+    """FB disonnect functionality.  Pairs with universal disconnect function."""
     facebook_id = login_session['facebook_id']
     access_token = login_session['access_token']
     url = 'https://graph.facebook.com/{id}/permissions?access_token={token}'.format(
@@ -309,6 +311,7 @@ def fbdisconnect():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """Google Plus sign in."""
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -396,6 +399,7 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    """Google logout.  Pairs with universal disconnect function."""
     access_token = login_session.get('access_token')
     print 'In gdisconnect, access token is {token}'.format(token=access_token)
     print 'User name is: '
@@ -420,6 +424,7 @@ def gdisconnect():
 # Universal disconnect
 @app.route('/disconnect')
 def disconnect():
+    """Disconnects either FB or G+ login"""
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
@@ -453,7 +458,6 @@ def category_items_json(category_id):
     item_list = db.get_items_in_category(category_id)
     category = db.get_cat(category_id)
     return jsonify(Category=category.name, Items=[item.serialize for item in item_list])
-    # return jsonify(Items=[item.serialize for item in item_list])
 
 
 @app.route('/category/<int:category_id>/<int:item_id>/JSON')

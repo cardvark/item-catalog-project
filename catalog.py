@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 from flask import session as login_session
+from functools import wraps
 import random
 import string
 app = Flask(__name__)
@@ -25,6 +26,15 @@ session = DBSession()
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = 'Item Catalog'
+
+
+def login_required(function):
+    @wraps(function)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect(url_for('show_login'))
+        return function(*args, **kwargs)
+    return decorated_function
 
 
 @app.route('/')
@@ -78,10 +88,9 @@ def show_item(category_id, item_id):
     '/category/new/<int:category_id>/',
     methods=['GET', 'POST']
     )
+@login_required
 def new_item(category_id):
     """Add new item page.  Requires logged in status."""
-    if 'username' not in login_session:
-        return redirect(url_for('show_login'))
 
     categories = db.get_all_categories()
 
@@ -130,10 +139,9 @@ def new_item(category_id):
     '/category/<int:category_id>/<int:item_id>/edit/',
     methods=['GET', 'POST']
     )
+@login_required
 def edit_item(category_id, item_id):
     """Edit item page. User must have created the item to edit."""
-    if 'username' not in login_session:
-        return redirect(url_for('show_login'))
 
     categories = db.get_all_categories()
     cat = db.get_cat(category_id)
@@ -184,10 +192,9 @@ def edit_item(category_id, item_id):
     '/category/<int:category_id>/<int:item_id>/delete/',
     methods=['GET', 'POST']
     )
+@login_required
 def delete_item(category_id, item_id):
     """Delete item page.  User must have created item to delete."""
-    if 'username' not in login_session:
-        return redirect(url_for('show_login'))
 
     cat = db.get_cat(category_id)
     item = db.get_item(item_id)
@@ -212,6 +219,7 @@ def delete_item(category_id, item_id):
             )
 
 
+# Login functions and handling
 @app.route('/login')
 def show_login():
     """Login page"""

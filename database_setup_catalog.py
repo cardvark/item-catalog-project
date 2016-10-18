@@ -7,7 +7,7 @@ from sqlalchemy import asc, desc
 
 Base = declarative_base()
 
-engine = create_engine('sqlite:///gamescatalog.db')
+engine = create_engine('postgresql://catalog:bloodandfire@localhost/catalog')
 
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)

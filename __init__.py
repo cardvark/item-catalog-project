@@ -242,7 +242,7 @@ def fbconnect():
     access_token = request.data
     print 'Access token received {token}'.format(token=access_token)
 
-    fb_client_json = open('fb_client_secrets.json', 'r').read()
+    fb_client_json = open('/var/www/Catalog/Catalog/fb_client_secrets.json', 'r').read()
 
     app_id = json.loads(fb_client_json)['web']['app_id']
     app_secret = json.loads(fb_client_json)['web']['app_secret']
@@ -331,7 +331,7 @@ def gconnect():
 
     try:
         # Upgrades auth code into credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('/var/www/Catalog/Catalog/client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:

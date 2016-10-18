@@ -1,0 +1,5 @@
+# No .pyc files
+*.pyc
+
+# No DB
+*.db

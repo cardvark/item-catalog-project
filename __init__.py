@@ -3,7 +3,7 @@ from flask import session as login_session
 from functools import wraps
 import random
 import string
-app = Flask(__name__)
+import sys
 
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import sessionmaker
@@ -20,11 +20,13 @@ import json
 from flask import make_response
 import requests
 
+app = Flask(__name__)
+
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(open('/var/www/Catalog/Catalog/client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = 'Item Catalog'
 
 
